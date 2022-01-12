@@ -1,21 +1,24 @@
-import { useState } from "react";
-import { connect } from "react-redux";
-import PropTypes from "prop-types";
-import actions from "../../redux/actions";
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
+import actions from '../../redux/actions';
+import { getContacts } from '../../redux/selectors';
 
-import s from "./ContactForm.module.css";
+import s from './ContactForm.module.css';
 
-function ContactForm({ onSubmit }) {
-  const [name, setName] = useState("");
-  const [number, setNumber] = useState("");
+export default function ContactForm() {
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
+  const dispatch = useDispatch();
+  const contacts = useSelector(getContacts);
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value } = e.target;
     switch (name) {
-      case "name":
+      case 'name':
         setName(value);
         break;
-      case "number":
+      case 'number':
         setNumber(value);
         break;
       default:
@@ -23,16 +26,28 @@ function ContactForm({ onSubmit }) {
     }
   };
 
-  const handleSubmit = (event) => {
+  console.log(contacts);
+
+  const handleSubmit = event => {
     event.preventDefault();
 
-    onSubmit({ name, number });
+    if (
+      contacts
+        .map(contact => contact.name.toLowerCase())
+        .includes(name.toLowerCase())
+    ) {
+      alert(`Contact "${name}" already exists`);
+      return;
+    }
+
+    dispatch(actions.addContact({ name, number }));
+
     reset();
   };
 
   const reset = () => {
-    setName("");
-    setNumber("");
+    setName('');
+    setNumber('');
   };
 
   return (
@@ -75,9 +90,3 @@ function ContactForm({ onSubmit }) {
 ContactForm.propTypes = {
   onSubmit: PropTypes.func,
 };
-
-const mapDispatchToProps = (dispatch) => ({
-  onSubmit: (data) => dispatch(actions.addContact(data)),
-});
-
-export default connect(null, mapDispatchToProps)(ContactForm);

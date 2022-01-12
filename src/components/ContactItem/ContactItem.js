@@ -1,18 +1,21 @@
-import { connect } from "react-redux";
-import s from "./ContactItem.module.css";
-import actions from "../../redux/actions";
+import { useDispatch } from 'react-redux';
+import s from './ContactItem.module.css';
+import actions from '../../redux/actions';
 
-const ContactItem = ({ id, name, number, onDeleteContact }) => (
-  <li className={s.item} key={id}>
-    {name}: &nbsp;{number}
-    <button className={s.deleteButton} onClick={() => onDeleteContact(id)}>
-      Delete
-    </button>
-  </li>
-);
+const ContactItem = ({ id, name, number }) => {
+  const dispatch = useDispatch();
 
-const mapDispatchToProps = (dispatch) => ({
-  onDeleteContact: (id) => dispatch(actions.deleteContact(id)),
-});
+  return (
+    <li className={s.item} key={id}>
+      {name}: &nbsp;{number}
+      <button
+        className={s.deleteButton}
+        onClick={() => dispatch(actions.deleteContact(id))}
+      >
+        Delete
+      </button>
+    </li>
+  );
+};
 
-export default connect(null, mapDispatchToProps)(ContactItem);
+export default ContactItem;
